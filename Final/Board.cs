@@ -39,8 +39,9 @@ public static class Board
     // UI of selecting cards
     public static int[] SelectCards(Player currentPlayer, Player p1, Player p2, bool doNeedRenderOpponentPlayedCards)
     {
-        var hand = currentPlayer.hand;
+        if (currentPlayer is ComputerPlayer) return currentPlayer.ChooseCards()!; // if it's a computer player, return by ai
 
+        var hand = currentPlayer.hand;
         List<int> CardsSelected = new();
         int cursorIndex = 0;
         string playerName = currentPlayer == p1 ? "Player 1" : "Player2";
@@ -58,12 +59,11 @@ public static class Board
             Console.WriteLine("Red JOKER: Counts as 13 Hearts and 13 Diamonds simultaneously.");
             Console.WriteLine("Black JOKER: Counts as 13 Spades and 13 Clubs simultaneously.");
             RenderStatus(p1, p2); // it's really tedious to render status each time after .Clear. Is there any better way? written after: yes yes
-            Console.WriteLine("=============================================================");
+            // Console.WriteLine("=============================================================");
             Console.WriteLine("Use ↑/↓ arrows to move, [SPACE] to select, [ENTER] to confirm. You need to play 4 cards.");
-            Console.WriteLine("=============================================================");
-            Console.WriteLine($"========  ROUND {Program.round}  ========");
-            Console.WriteLine($"         {playerName}'s Turn ");
-            Console.WriteLine($"         Selected Cards: {CardsSelected.Count}/4");
+            // Console.WriteLine("=============================================================");
+            Console.WriteLine($"================  ROUND {Program.round + 1}  ================");
+            Console.WriteLine($"       {playerName}'s Turn.  Selected Cards: {CardsSelected.Count}/4");
             Console.WriteLine("=============================================================");
             if (doNeedRenderOpponentPlayedCards)RenderOpponentPlayedCards(currentPlayer == p1 ? p2 : p1); // render opponent's played cards in second player's turn.
 
@@ -114,9 +114,9 @@ public static class Board
         {
             int total = Program.game.CalculateScore(player, suit);
             string icon = SwitchSuitIcon(suit);
-            Console.WriteLine($" {icon} {total}");
+            Console.Write($" {icon} {total}  ");
         }
-        Console.WriteLine("================================");
+        Console.WriteLine(" ");
     }
 
     public static void RenderRoundResult(int round, Player p1, Player p2)

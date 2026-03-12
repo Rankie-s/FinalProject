@@ -14,14 +14,14 @@ public class Program
         Console.WriteLine("Welcome to this Game!");
         Console.WriteLine("Select game mode: ");
         Console.WriteLine("1. PvP ");
-        Console.WriteLine("2. PvE (Coming Soon)");
+        Console.WriteLine("2. PvE ");
         Action? action = null;
         while (action is null)
         {
             action = Console.ReadKey(true).Key switch
             {
                 ConsoleKey.D1 or ConsoleKey.NumPad1 => RunPvP,
-                //ConsoleKey.D2 or ConsoleKey.NumPad2 => RunPvE, no pve mode yet!
+                ConsoleKey.D2 or ConsoleKey.NumPad2 => RunPvE,
                 _ => null
             };
         }
@@ -31,9 +31,20 @@ public class Program
     static void RunPvP()
     {
         // init players and game
-        Player p1 = new Player();
-        Player p2 = new Player();
+        Player p1 = new HumanPlayer();
+        Player p2 = new HumanPlayer();
+        RunGame(p1, p2);
+    }
 
+    static void RunPvE()
+    {
+        Player p1 = new HumanPlayer();
+        Player p2 = new ComputerPlayer();
+        RunGame(p1, p2);
+    }
+
+    static void RunGame(Player p1, Player p2)
+    {
         // shuffle players' decks and draw hands
         p1.Shuffle();
         p2.Shuffle();
@@ -63,7 +74,7 @@ public class Program
             // first player's turn
             bool doNeedRenderOpponentPlayedCards = false;
             int[] firstSelection = Board.SelectCards(goesFirst, p1, p2, doNeedRenderOpponentPlayedCards);
-            goesFirst.PlayHand(firstSelection); 
+            goesFirst.PlayHand(firstSelection);
             
             Console.Clear();
             Console.WriteLine($"{first} has chosen their cards. Pass the device to {second}.");
@@ -96,10 +107,5 @@ public class Program
 
         // run gameover logic when game is over
         game.GameOver(p1,  p2);
-    }
-
-    static void RunPvE()
-    {
-        Console.WriteLine("coming soon...");
     }
 }
