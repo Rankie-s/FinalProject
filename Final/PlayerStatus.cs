@@ -2,12 +2,14 @@ namespace Final;
 
 public class Player
 {
-    List<(CardNum num, Suit? suit)> deck; // cards in each player's deck
-    public readonly List<(CardNum num, Suit? suit)> hand; // cards at hand
-    public List<(CardNum num, Suit? suit)> playCards;
+    public readonly List<(Suit? suit, CardNum num)> deck; // cards in each player's deck
+    public readonly List<(Suit? suit, CardNum num)> hand; // cards at hand
+    public List<(Suit? suit, CardNum num)> playCards;
     public bool isDead {get; private set;} = false;
     public int HP {get; private set;} = 50;
     public int shield {get; private set;} = 0;
+    public bool canKeepShield {get; set;} = false; // keep shield ever after
+    public int restoredShield {get; set;} = 0; // shield restored for the next round
     int maxHand = 7;
     int drawNum; // draw the card at this pos in deck
 
@@ -17,11 +19,11 @@ public class Player
         (
             from num in Enum.GetValues<CardNum>()
             from Suit? suit in Enum.GetValues<Suit>()
-            where num < CardNum.BlackJoker
-            select (num, suit)//.ToList()
+            where num < CardNum.BlackJoker // don't select two jokers here because they don't have suit
+            select (suit, num)//.ToList() don't need it because new() already calls it
         );
-        deck.Add((CardNum.BlackJoker, null));
-        deck.Add((CardNum.RedJoker, null));
+        deck.Add((null, CardNum.BlackJoker));
+        deck.Add((null, CardNum.RedJoker));
 
         hand = new();
         playCards = new();
@@ -30,7 +32,7 @@ public class Player
 
     public void Shuffle() // suffle player's deck
     {
-        for(int i = deck.Count - 1; i > 0; i--)
+        for (int i = deck.Count - 1; i > 0; i--)
         {
             int j = Random.Shared.Next(i + 1);
             (deck[i], deck[j]) = (deck[j], deck[i]);
@@ -47,16 +49,14 @@ public class Player
         }
         */
     }
-
     public void DrawHand() // draw hand to maxHand(7)
     {
-        while(hand.Count < maxHand)
+        while (hand.Count < maxHand)
         {
             hand.Add(deck[drawNum]);
             drawNum++;
         }
     }
-
     public void PlayHand(int[] playNum)
     {
         playCards.Clear(); // clear the playlist before playing new cards
@@ -66,39 +66,38 @@ public class Player
         playCards.AddRange(playedCards);
         
         // remove them from hand
-        foreach(var card in playedCards) hand.Remove(card);
+        foreach (var card in playedCards) hand.Remove(card);
     }
-
     public void TakeDamage(int dmg)
     {
         int actualDmg = dmg - shield;
-        if(actualDmg > 0) {HP -= actualDmg; shield = 0;}
+        if (actualDmg > 0) // dmg greater than shield, break the shield.
+        {
+            HP -= actualDmg;
+            shield = 0;
+            canKeepShield = false;
+        }
         else shield -= dmg;
-        if(HP <= 0) isDead = true;
+        if (HP <= 0) isDead = true;
     }
-
     public void TakeActualDamage(int dmg)
     {
         HP -= dmg;
-        if(HP <= 0) isDead = true;
+        if (HP <= 0) isDead = true;
     }
-
     public void Heal(int heal)
     {
-        if(HP + heal > 50) HP = 50;
+        if (HP + heal > 50) HP = 50;
         else HP += heal;
     }
-
     public void ClearShield()
     {
         shield = 0;
     }
-
     public void GetShield(int get)
     {
-        shield = get;
+        shield += get;
     }
-
 }
 
 public enum CardNum

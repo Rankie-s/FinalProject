@@ -11,7 +11,7 @@ public static class Board
     }
 
     // render each card
-    static void RenderCard((CardNum num, Suit? suit) card, bool hasCursor, bool isSelected)
+    static void RenderCard((Suit? suit, CardNum num) card, bool hasCursor, bool isSelected)
     {
         string cursor = hasCursor ? ">" : " ";
         string checkbox = isSelected ? "[X]" : "[ ]";
@@ -33,7 +33,7 @@ public static class Board
     public static void PressEnterToContinue()
     {
         Console.WriteLine("Press ENTER to continue...");
-        while(Console.ReadKey(true).Key is not ConsoleKey.Enter) continue;
+        while (Console.ReadKey(true).Key is not ConsoleKey.Enter) continue;
     }
 
     // UI of selecting cards
@@ -50,23 +50,25 @@ public static class Board
             Console.Clear();
             Console.WriteLine("=============================================================");
             Console.WriteLine("Effect of suit");
-            Console.WriteLine("♠ : Deal damage to the opponent.");
-            Console.WriteLine("♣ : Deal damage that ignores shields.");
-            Console.WriteLine("♥ : Restore health in the end of this round (cannot exceed 50 HP).");
-            Console.WriteLine("♦ : Gain a temporary shield at the beginning of the round.");
-            Console.WriteLine("=============================================================");
+            Console.WriteLine("♠ : Deal damage to the opponent. If you win with ♠ ACE, deal an additional 13 damage.");
+            Console.WriteLine("♣ : Deal damage that ignores shields. If you win with ♣ ACE, gain shield equal to the damage dealt by Clubs for the next round.");
+            Console.WriteLine("♥ : Restore health in the end of this round (cannot exceed 50 HP). If you have ♥ ACE, Negate the opponent's Heart cards, and you recover HP equal to your Heart value.");
+            Console.WriteLine("♦ : Gain a temporary shield at the beginning of the round. If you win with ♦ ACE, your shield remains until it is broken.");
+            Console.WriteLine("Red JOKER: Counts as 13 Hearts and 13 Diamonds simultaneously.");
+            Console.WriteLine("Black JOKER: Counts as 13 Spades and 13 Clubs simultaneously.");
             RenderStatus(p1, p2); // it's really tedious to render status each time after .Clear. Is there any better way?
-            Console.WriteLine($" {playerName}'s Turn ");
-            Console.WriteLine("Use ↑/↓ arrows to move, [SPACE] to select, [ENTER] to confirm. You need to play 4 cards.");
-            Console.WriteLine($"Selected Cards: {CardsSelected.Count}/4");
             Console.WriteLine("=============================================================");
-            if(doNeedRenderOpponentPlayedCards)RenderOpponentPlayedCards(currentPlayer == p1 ? p2 : p1); // render opponent's played cards in second player's turn.
+            Console.WriteLine("Use ↑/↓ arrows to move, [SPACE] to select, [ENTER] to confirm. You need to play 4 cards.");
+            Console.WriteLine("=============================================================");
+            Console.WriteLine($"========  ROUND {Program.round}  ========");
+            Console.WriteLine($"         {playerName}'s Turn ");
+            Console.WriteLine($"         Selected Cards: {CardsSelected.Count}/4");
+            Console.WriteLine("=============================================================");
+            if (doNeedRenderOpponentPlayedCards)RenderOpponentPlayedCards(currentPlayer == p1 ? p2 : p1); // render opponent's played cards in second player's turn.
 
             // render each cards.
             for (int i = 0; i < hand.Count; i++)
             {
-                //string cursor = i == cursorIndex ? ">" : " ";
-                //string checkbox = CardsSelected.Contains(i) ? "[X]" : "[ ]";
                 bool hasCursor = i == cursorIndex ? true : false;
                 bool isSelected = CardsSelected.Contains(i) ? true : false;
                 RenderCard(hand[i], hasCursor, isSelected);
@@ -109,15 +111,23 @@ public static class Board
         // add num of same suit and render it
         foreach (Suit suit in Enum.GetValues<Suit>())
         {
-            var cardsOfSuit = player.playCards.Where(c => c.suit == suit).ToArray();
-
-            if (cardsOfSuit.Length > 0)
-            {
-                int total = cardsOfSuit.Sum(c => (int)c.num);
-                string icon = SwitchSuitIcon(suit);
-                Console.WriteLine($"  {icon}  Total: {total}");
-            }
+            int total = Program.game.CalculateScore(player, suit);
+            string icon = SwitchSuitIcon(suit);
+            Console.WriteLine($" {icon} {total}");
         }
         Console.WriteLine("================================");
+    }
+
+    public static void RenderRoundResult(int round, Player p1, Player p2)
+    {
+            Console.Clear();
+            Console.WriteLine($"=== ROUND {round} RESULTS ===");
+            foreach (Suit suit in Enum.GetValues<Suit>())
+            {
+                string icon = SwitchSuitIcon(suit);
+                int total1 = Program.game.CalculateScore(p1, suit);
+                int total2 = Program.game.CalculateScore(p2, suit);
+                Console.WriteLine($" {icon} {total1} : {total2}");
+            }
     }
 }

@@ -14,11 +14,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "E:\\Homework\\C#\\final\\Final\\Final.csproj",
+      "projectUniqueName": "E:\\Homework\\C#\\final\\FinalProject\\Final\\Final.csproj",
       "projectName": "Final",
-      "projectPath": "E:\\Homework\\C#\\final\\Final\\Final.csproj",
+      "projectPath": "E:\\Homework\\C#\\final\\FinalProject\\Final\\Final.csproj",
       "packagesPath": "C:\\Users\\jiang\\.nuget\\packages\\",
-      "outputPath": "E:\\Homework\\C#\\final\\Final\\obj\\",
+      "outputPath": "E:\\Homework\\C#\\final\\FinalProject\\Final\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "E:\\Visual Studio 2022\\share\\NuGetPackages"
