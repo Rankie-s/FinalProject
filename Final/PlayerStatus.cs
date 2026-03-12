@@ -53,6 +53,7 @@ public class Player
     {
         while (hand.Count < maxHand)
         {
+            if (drawNum > deck.Count) return;
             hand.Add(deck[drawNum]);
             drawNum++;
         }

@@ -17,8 +17,8 @@ public class Game
             (winner, loser, winnerNum) = (p1Score - p2Score) switch
             {
                 0 => (null, null, 0),
-                < 0 => (p1, p2, 1),
-                > 0 => (p2, p1, 2)
+                < 0 => (p2, p1, 2),
+                > 0 => (p1, p2, 1)
             };
             int diff = Math.Abs(p1Score - p2Score);
 
@@ -130,7 +130,8 @@ public class Game
     public void GameOver(Player p1, Player p2)
     {
         // game over
-        Console.Clear();
+        //Console.Clear();
+        Console.SetCursorPosition(0, 0);
         Console.WriteLine("=== GAME OVER ===");
         if (p1.isDead || p2.isDead) // end the game by opponent's HP is lower than 0
         {

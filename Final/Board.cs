@@ -47,7 +47,8 @@ public static class Board
 
         while (true) // one player selects cards and play
         {
-            Console.Clear();
+            //Console.Clear();
+            Console.SetCursorPosition(0, 0);
             Console.WriteLine("=============================================================");
             Console.WriteLine("Effect of suit");
             Console.WriteLine("♠ : Deal damage to the opponent. If you win with ♠ ACE, deal an additional 13 damage.");
@@ -56,7 +57,7 @@ public static class Board
             Console.WriteLine("♦ : Gain a temporary shield at the beginning of the round. If you win with ♦ ACE, your shield remains until it is broken.");
             Console.WriteLine("Red JOKER: Counts as 13 Hearts and 13 Diamonds simultaneously.");
             Console.WriteLine("Black JOKER: Counts as 13 Spades and 13 Clubs simultaneously.");
-            RenderStatus(p1, p2); // it's really tedious to render status each time after .Clear. Is there any better way?
+            RenderStatus(p1, p2); // it's really tedious to render status each time after .Clear. Is there any better way? written after: yes yes
             Console.WriteLine("=============================================================");
             Console.WriteLine("Use ↑/↓ arrows to move, [SPACE] to select, [ENTER] to confirm. You need to play 4 cards.");
             Console.WriteLine("=============================================================");
