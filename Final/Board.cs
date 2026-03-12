@@ -114,9 +114,16 @@ public static class Board
         {
             int total = Program.game.CalculateScore(player, suit);
             string icon = SwitchSuitIcon(suit);
-            Console.Write($" {icon} {total}  ");
+            Console.Write($"   {icon} {total}");
+            bool hasAce = HasAceOfThisSuit(player, suit);
+            if(hasAce) Console.Write($" (with {icon}ACE)");
         }
         Console.WriteLine(" ");
+    }
+
+    public static bool HasAceOfThisSuit(Player player, Suit suit)
+    {
+        return player.playCards.Where(c => c.num == CardNum.Ace).Any(c => c.suit == suit);
     }
 
     public static void RenderRoundResult(int round, Player p1, Player p2)
