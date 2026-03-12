@@ -1,0 +1,112 @@
+namespace Final;
+
+public class Player
+{
+    List<(CardNum num, Suit? suit)> deck; // cards in each player's deck
+    public readonly List<(CardNum num, Suit? suit)> hand; // cards at hand
+    public List<(CardNum num, Suit? suit)> playCards;
+    public bool isDead {get; private set;} = false;
+    public int HP {get; private set;} = 50;
+    public int shield {get; private set;} = 0;
+    int maxHand = 7;
+    int drawNum; // draw the card at this pos in deck
+
+    public Player() // init player's deck, hand and some other things
+    {
+        deck = new
+        (
+            from num in Enum.GetValues<CardNum>()
+            from Suit? suit in Enum.GetValues<Suit>()
+            where num < CardNum.BlackJoker
+            select (num, suit)//.ToList()
+        );
+        deck.Add((CardNum.BlackJoker, null));
+        deck.Add((CardNum.RedJoker, null));
+
+        hand = new();
+        playCards = new();
+        drawNum = 0;
+    }
+
+    public void Shuffle() // suffle player's deck
+    {
+        for(int i = deck.Count - 1; i > 0; i--)
+        {
+            int j = Random.Shared.Next(i + 1);
+            (deck[i], deck[j]) = (deck[j], deck[i]);
+        }
+        drawNum = 0;
+        /*
+        This is my origional idea, but it proves to be wrong later. 
+        This is wrong because it creates (deck.Count)^(deck.Count) ways, while the num of suffle should be (deck.Count)!
+
+        for(int i = 0; i < deck.Count; i++)
+        {
+            int j = Random.Shared.Next(deck.Count);
+            (deck[i], deck[j]) = (deck[j], deck[i]);
+        }
+        */
+    }
+
+    public void DrawHand() // draw hand to maxHand(7)
+    {
+        while(hand.Count < maxHand)
+        {
+            hand.Add(deck[drawNum]);
+            drawNum++;
+        }
+    }
+
+    public void PlayHand(int[] playNum)
+    {
+        playCards.Clear(); // clear the playlist before playing new cards
+        
+        // restore cards played first.
+        var playedCards = (from i in playNum select hand[i]).ToArray();
+        playCards.AddRange(playedCards);
+        
+        // remove them from hand
+        foreach(var card in playedCards) hand.Remove(card);
+    }
+
+    public void TakeDamage(int dmg)
+    {
+        int actualDmg = dmg - shield;
+        if(actualDmg > 0) {HP -= actualDmg; shield = 0;}
+        else shield -= dmg;
+        if(HP <= 0) isDead = true;
+    }
+
+    public void TakeActualDamage(int dmg)
+    {
+        HP -= dmg;
+        if(HP <= 0) isDead = true;
+    }
+
+    public void Heal(int heal)
+    {
+        if(HP + heal > 50) HP = 50;
+        else HP += heal;
+    }
+
+    public void ClearShield()
+    {
+        shield = 0;
+    }
+
+    public void GetShield(int get)
+    {
+        shield = get;
+    }
+
+}
+
+public enum CardNum
+{
+     Ace = 1, Two, Three, Four, Five, Six, Seven, Eight, Nine, Ten, Jack, Queen, King, BlackJoker, RedJoker
+}
+
+public enum Suit
+{
+    Diamond, Spade, Club, Heart
+}
